@@ -11,37 +11,57 @@
     lw   $t0, b            # Carregando b
     addi $t1, $t0, 35      # a = b + 35
 
-    # Carregando e e somando com o valor de a
-    lw $t0, e              
+    # Carregando "e" e somando com o valor de "a"
+    lw $t0, e # Carregando e
     add $t2, $t0, $t1      # $t2 = a + e
 
-    # --- PRIMEIRO: calcular d² ---
+    # --- Calculando d² ---
     lw   $t0, d            # $t0 = d (valor base)
     move $t1, $t0          # $t1 = contador para multiplicação (d vezes)
-    li   $t3, 0            # $t3 = acumulador (resultado de d²)
+    li   $t3, 0            # $t3 = acumulador (onde estará o resultado de d²)
 
 eleva_quadrado:
+    # Elevando o valor de d ao quadrado
+
+    # Quando o contador for igual a 0, sair da repetição (quadrado calculado)
     beq  $t1, $zero, quadrado_pronto
-    add  $t3, $t3, $t0     # acumulando d + d + d + ...
+
+    # Adicionando o valor de d ao acumulador
+    add  $t3, $t3, $t0
+
+    # Decrementando o contador
     subi $t1, $t1, 1
+
+    # Retorna para o início da repetição
     j    eleva_quadrado
 
 quadrado_pronto:
-    # Agora $t3 tem d²
-    # Calculando d³ ou (d² * d)
+    # Agora $t3 tem o valor de d² e t0 tem o valor de d
+    # Calculando d³, utilizando d² e d (d³ = d² * d)
     li   $t4, 0   # $t4 = acumulador para d³
 
 eleva_cubo:
 	# Agora, como temos o valor de d², somamos d vezes d² e 
 	# salvamos em um registrador temporario (T5)
-    	beq  $t0, $zero, cubo_pronto
-    	add  $t4, $t4, $t3     # somando d² vezes
-    	subi $t0, $t0, 1 # Substituindo 1 de t1
-    	j    eleva_cubo
+
+    # Verifica se o cubo foi calculado (t0 = 0)
+    beq  $t0, $zero, cubo_pronto
+    # Adicionando d² na variavel temporaria t4
+    add  $t4, $t4, $t3
+    #  Substraindo 1 de t1
+    subi $t0, $t0, 1
+    j    eleva_cubo
 
 cubo_pronto:
-    # Cubo pronto esta em t4 e (a+e) em t2, fazer subtracao de t4 - t2
+    # Cubo de d calculado e salvo em t4, e a soma de a com e em  t2
+    # Agora calculamos (c = d³ - (a+e))
+
+    # Subtraindo (a+e) de d³
     sub $t0, $t4, $t2
+    # Salvando c na memoria de dados
+    sw   $t0, c
+
+
     
     # Imprime o resultado
     li $v0, 1
